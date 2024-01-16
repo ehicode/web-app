@@ -29,7 +29,7 @@ pipeline {
         stage('Deploying to Tomcat with Dockerhub') {
             steps {
                 echo 'Deploying application to Tomcat'
-                def dockerfilePath = "web-app/my_Docker/Dockerfile"
+                def dockerfilePath = "web-app/Dockerfile"
                 docker.build("tomcat:7.0.70-alpine", "--file ${dockerfilePath} .")
                 sh "sudo docker build -t webimage:${BUILD_NUMBER} ."
                 sh "sudo docker container run -itd --name proj${BUILD_NUMBER} -p 8082:8080 webimage:${BUILD_NUMBER}"
