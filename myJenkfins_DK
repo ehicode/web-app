@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+    tools {
+        maven 'Maven'
+    }
+    environment {
+        SCM = 'https://github.com/ehicode/maven-web-app.git'
+    }
+    stages {
+        stage('Git Clone') {
+            steps {
+                echo "Cloning from git repository"
+                git "${SCM}"
+                echo "Cloning complete"
+            }
+        }
+        stage('BuildApp') {
+            steps {
+                echo "Building Application"
+                sh 'mvn package'
+            }
+        }
+        stage('Deploy to Nexus') {
+            steps {
+                sh 'mvn deploy'
+                echo "Nexus deployment completed"
+            }
+        }
+        stage('Deploying to Tomcat with Dockerhub') {
+            steps {
+                echo 'Deploying application to Tomcat'
+                def dockerfilePath = "web-app/my_Docker/Dockerfile"
+                docker.build("tomcat:7.0.70-alpine", "-f ${dockerfilePath} .")
+                sh "sudo docker build -t webimage:${BUILD_NUMBER} ."
+                sh "sudo docker container run -itd --name proj${BUILD_NUMBER} -p 8082:8080 webimage:${BUILD_NUMBER}"
+            }
+        }
+    }
+}
