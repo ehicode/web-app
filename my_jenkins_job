@@ -20,19 +20,13 @@ pipeline {
                 sh 'mvn package'
             }
         }
-        stage('Deploy to Nexus') {
-            steps {
-                sh 'mvn deploy'
-                echo "Nexus deployment completed"
-            }
-        }
         stage('Deploying to Tomcat with Dockerhub') {
             steps {
-                    script{             
-                echo 'Deploying application to Tomcat'
-                def dockerfilePath = "web-app/Dockerfile"
-                sh "sudo docker build -t webimage:${BUILD_NUMBER} --file ${dockerfilePath} ."
-                sh "sudo docker container run -itd --name proj${BUILD_NUMBER} -p 8082:8080 webimage:${BUILD_NUMBER}"
+                    script{
+                    echo 'Deploying application to Tomcat'
+                    def dockerfilePath = "web-app/Dockerfile"
+                    sh "sudo docker build -t webimage:${BUILD_NUMBER} --file ${dockerfilePath} ."
+                    sh "sudo docker container run -itd --name proj${BUILD_NUMBER} -p 8082:8080 webimage:${BUILD_NUMBER}"
             }
             }
         }
