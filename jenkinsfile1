@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+    tools {
+        maven 'maven'
+    }
+    environment {
+        SCM = 'https://github.com/ehicode/maven-web-app.git'
+    }
+    stages {
+        stage('Git Clone') {
+            steps {
+                echo "Cloning from git repository"
+                git "${SCM}"
+                echo "Cloning complete"
+            }
+        }
+        stage('BuildApp') {
+            steps {
+                echo "Building Application"
+                sh 'mvn package'
+            }
+        }
+    }
+}
